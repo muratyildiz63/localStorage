@@ -1,0 +1,75 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <input type="text" id="myinput" value="">
+        <button id="mybtn" onclick="todo.adder()">add to list</button>
+        <button id="ClearBtn" onclick="todo.clear()">Clear</button>
+        <button id="edit" onclick="todo.edit()">Edit</button>
+    </div>
+    <div id="todolist">
+    </div>
+    <script>
+        var btn = document.getElementById("mybtn");
+        var myinput = document.getElementById("myinput");
+        var todolist = document.getElementById("todolist");
+        var id;
+        var todo = {
+            data: JSON.parse(localStorage.getItem("todom")) || [],
+            adder: function(e) {
+                var val = myinput.value;
+                this.data.push({
+                    name: val,
+                    check: false,
+                });
+                this.setter();
+                myinput.value = "";
+            },
+            setter: function() {
+                localStorage.setItem("todom", JSON.stringify(this.data));
+                this.getter();
+            },
+            getter: function() {
+                var todos = "";
+                this.data.forEach((el, i) => {
+                    todos += `<table>
+                        <tr>
+                            <td style="width:100px"><div  id="editt${i}" onclick="todo.update(${i})"> ${el.name} </div> </td>
+                        <td> <button onclick="todo.deleter(${i})">sil</button> </td>
+                        <tr>
+                        </table> `;
+                });
+                todolist.innerHTML = todos;
+            },
+            deleter: function(i) {
+                this.data.splice(i, 1);
+                this.setter();
+            },
+            clear: function() {
+                alert("Tümü Silindi");
+                this.data = [];
+                this.setter();
+            },
+            update: function(e) {
+                myinput.value = document.getElementById("editt" + e).innerHTML;
+                document.getElementById("editt" + e).style.textDecoration = "line-through";
+                id = e;
+            },
+            edit: function() {
+                this.data[id].name = myinput.value;
+                this.setter();
+                myinput.value = "";
+                document.getElementsByClassName("div").style.textDecoration = "none";
+            }
+        }
+        todo.getter();
+    </script>
+</body>
+
+</html>
